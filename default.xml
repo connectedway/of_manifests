@@ -10,5 +10,6 @@
   <project name="meta-openembedded" path="layers/meta-openembedded" remote="openembedded" revision="pyro"/>
   <project name="meta-connectedway" path="layers/meta-connectedway" remote="connectedway" revision="pyro">
     <copyfile src="scripts/oe-init-build-env" dest="oe-init-build-env"/>
+    <linkfile src="conf" dest=".templateconf">
   </project>
 </manifest>
