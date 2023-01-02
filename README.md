@@ -115,7 +115,7 @@ By default, the openfile distribution from the Connected Way
 git repo will build Openfiles SMB support for a qemuarm64
 machine.  If you wish either non-smb support or to build for a different
 target, you will have to modify the `poky/build/conf/local.conf` and
-make the following changes:
+make the OPTIONAL following changes:
 
 1. Select the correct target MACHINE.  We use qemuarm64:
 ```
@@ -441,16 +441,9 @@ the openfiles framework.  The main set of APIs is contained in the header
 Windows File APIs.  
 
 The smbcp.c source file contains code for both the asynchronous file copy
-and synchronous file copy modes.  The asynchronous code supports arbitrary
-queue depth of arbitrary buffer size (up to a max of OFC_MAX_IO).  If you
-have questions on the operation of the asynchrous copy, please contact
-Connected Way support.  The entry point to the asynchronous file copy is
+and synchronous file copy modes.
 
-```
-static OFC_DWORD copy_async(OFC_CTCHAR *rfilename, OFC_CTCHAR *wfilename)
-```
-
-The synchronous file copy is much simpler.  It simply opens up the source
+The synchronous file copy is simple.  It simply opens up the source
 and destination files and then enters a loop where a buffer is read from the
 read file, and written to the write file.  The loop continues till an
 eof on the read file or an error on either.  The entry point of the synchronous
@@ -458,6 +451,35 @@ copy is:
 
 ```
 static OFC_DWORD copy_sync(OFC_CTCHAR *rfilename, OFC_CTCHAR *wfilename)
+```
+
+Pseudo code for the simple file copy follows.  
+
+```
+Begin
+
+    Open the Read File as read_file
+
+    Open the Write File as write_fil
+
+    while Read from read_file into buffer and length is True
+
+        Write to write_file from buffer and length
+
+    Close write_file
+
+    Close read_file
+
+Done
+```
+
+The asynchronous code supports arbitrary
+queue depth of arbitrary buffer size (up to a max of OFC_MAX_IO).  If you
+have questions on the operation of the asynchrous copy, please contact
+Connected Way support.  The entry point to the asynchronous file copy is
+
+```
+static OFC_DWORD copy_async(OFC_CTCHAR *rfilename, OFC_CTCHAR *wfilename)
 ```
 
 The main entry point parses the arguments, converts the ascii file names
