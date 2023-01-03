@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote fetch="https://github.com/connectedway" name="connectedway"/>
+  <remote fetch="ssh://git@github.com/connectedway" name="connectedway_ssh"/>
+  <default sync-j="4"/>
+  
+  <project name="openfiles" path="git" remote="connectedway" revision="main"/>
+  <project name="of_core_cheap" path="git/of_core_cheap" remote="connectedway" revision="main"/>
+  <project name="of_core_binheap" path="git/of_core_binheap" remote="connectedway" revision="main"/>
+  <project name="of_core" path="git/of_core" remote="connectedway" revision="main"/>
+  <project name="Unity" path="git/Unity" remote="connectedway" revision="main"/>
+  <project name="of_core_fs_bookmarks" path="git/of_core_fs_bookmarks" remote="connectedway" revision="main"/>
+  <project name="of_core_fs_linux" path="git/of_core_fs_linux" remote="connectedway" revision="main"/>
+  <project name="of_core_linux" path="git/of_core_linux" remote="connectedway" revision="main"/>
+  <project name="of_core_binheap" path="git/of_core_binheap" remote="connectedway" revision="main"/>
+  <project name="of_core_fs_pipe" path="git/of_core_fs_pipe" remote="connectedway" revision="main"/>
+  <project name="of_smb_fs" path="git/of_smb_fs" remote="connectedway_ssh" revision="main"/>
+  <project name="of_smb_client" path="git/of_smb_client" remote="connectedway_ssh" revision="main"/>
+  <project name="of_smb_fs" path="git/of_smb_fs" remote="connectedway_ssh" revision="main"/>
+  <project name="of_smb_browser" path="git/of_smb_browser" remote="connectedway_ssh" revision="main"/>
+  <project name="of_security" path="git/of_security" remote="connectedway_ssh" revision="main"/>
+</manifest>

@@ -102,7 +102,10 @@ pyro or hardknott in the branch argument of the repo init command below:
 
 Repo sync will take a little bit of time as it clones all required repos.
 
-## Configuring a Build Environment for a Pyro Distribution
+## Configuring a Build Environment for the Yocto Distribution
+
+The correct layers for your selected kernel will automatically be configured
+by the repo tool in the previous step.  
 
 Initialize the build environment
 
