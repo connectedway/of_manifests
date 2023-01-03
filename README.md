@@ -11,7 +11,7 @@ against the pyro and hardknott releases of Yocto.
 
 # Supported Distros
 
-There are two supported yocto distributions of poky:
+There are two supported yocto distributions of poky for Openfiles:
 - pyro
 - hardknott
 
@@ -19,7 +19,7 @@ Others are likely supported but not currently qualified.
 
 # Background
 
-The intent of the of_manifests manifest is to support and demonstrate
+The intent of of_manifests is to support and demonstrate
 Connected Way's Open Files SMB client framework on embedded linux platforms.
 Specifcally, we want to demonstrate support on Linux 4.9 and Linux 5.10
 kernels.
@@ -27,24 +27,22 @@ kernels.
 Linux 4.9 is supported by the poky Pyro distribution and Linux 5.10 is
 supported by the poky Hardknott distribution.  Connected Way has forked
 the Yocto Project's poky repository branches pyro and hardknott and have
-hosted this fork on github.
+hosted this fork on Connected Way's github.
 
 Our intent was also to demonstrate openfiles support on Arm64 (aarch64)
 platforms.  There is no machine specific software within openfiles so the
 machine architecture is somewhat arbitrary, but we use Apple Mac Book Pros
 based on Apple's M1 chipset (a 64 bit Arm processor).  Because of this, we
 want a Ubuntu linux host distribution that supports arm64.  The only two
-Ubuntu distributions that support arm64 are 20.04 and 21.04.
+currently available Ubuntu distributions that support arm64 are
+20.04 and 21.04.
 
 Through experimentation, we discovered that the pyro distribution of poky
-will not easily run on either Ubuntu 21.04 or 20.04 although with select
-patches to the native recipes, the pyro distribution can be made to run on
-Ubuntu 20.04.  We have integrated the required patches to the pyro distribution
+will not easily run on either Ubuntu 21.04.  It can be made to run on Ubuntu
+20.04 but we have had to patch the pyro poky release to accomplish this.
+We have integrated the required patches to our own pyro distribution
 to support a Ubuntu 20.04 host onto the branch pyro-20.04.  Description of
-these changes will be discussed below.
-
-We also utilize authentication and cryptography support provided by the
-meta-openembedded layer.
+these changes are discussed in [the meta-connectedway Readme](https://github.com/connectedway/meta-connectedway/blob/main/README.md)
 
 # Deploying Openfiles in Yocto Project's Poky Distribution
 
@@ -94,13 +92,22 @@ $ chmod a+x repo
 Initialize your workspace.  We currently support two yocto releases: pyro
 (for the 4.9 kernel) and hardknott (for the 5.10 kernel).  We also
 support two types of builds: core and smb.  Core is the opensource
-openfiles framework.  Smb adds the smb client (and server) to the
-build.  Specify either
+openfiles framework.  Smb contains the core support but also adds the smb
+client (and server) to the build.  Specify either
 pyro or hardknott in the branch argument and the core.xml or smb.xml of
 the repo init command below:
 
+For example, to generate a core build of openfiles on pyro, issue:
+
 ```
 ./repo init https://github.com/connectedway/of_manifests -m core.xml -b pyro
+./repo sync
+```
+
+To generate an smb build of openfiles on hardknott, issue:
+
+```
+./repo init https://github.com/connectedway/of_manifests -m smb.xml -b hardknott
 ./repo sync
 ```
 
@@ -111,18 +118,17 @@ Repo sync will take a little bit of time as it clones all required repos.
 The correct layers for your selected kernel will automatically be configured
 by the repo tool in the previous step.  
 
-Initialize the build environment
+Initialize the build environment.
 
 ```
-$ cd yocto
 $ source oe-init-build-env
 ```
 
 By default, the openfile distribution from the Connected Way
-git repo will build Openfiles SMB support for a qemuarm64
+git repo will build Openfiles support for a qemuarm64
 machine.  If you wish to build for a different
 target, you will have to modify the `poky/build/conf/local.conf` and
-make the OPTIONAL following change:
+make the following OPTIONAL change:
 
 1. Select the correct target MACHINE.  We use qemuarm64:
 ```
@@ -132,16 +138,7 @@ MACHINE ?= "qemuarm64"
 # Building A Poky Distribution With OpenFiles
 
 If all the previous steps were successful, building a poky distribution with
-openfiles should essentially be one command:
-
-First, ensure you're build environment is set:
-
-```
-$ cd yocto
-$ source oe-init-build-env
-```
-
-Then issue the following command:
+openfiles will be one command:
 
 ```
 bitbake core-image-minimal
@@ -156,7 +153,7 @@ Once the build is complete, you can run your embedded linux image in qemu
 by executing the following command:
 
 ```
-../runqemu.openfiles
+runqemu.openfiles
 ```
 
 This script will start the qemu environment with arguments we have determined
@@ -174,7 +171,7 @@ root@qemuarm64:~#
 
 Openfiles and openfile artificts will be installed in the following locations:
 
-- /usr/bin/openfiles/smbcp: an openfiles smb aware copy utility (see below)
+- /usr/bin/openfiles/smbcp: an openfiles smb aware copy utility (see below).  Only installed on the smb variant of openfiles.
 - /usr/bin/openfiles/test_dg: a Datagram loopback test application
 - /usr/bin/openfiles/test_event: A openfiles event test
 - /usr/bin/openfiles/test_iovec: Tests of vector based messages
@@ -185,13 +182,10 @@ Openfiles and openfile artificts will be installed in the following locations:
 - /usr/bin/openfiles/test_timer: A test of openfiles timers
 - /usr/bin/openfiles/test_waitq: A test of openfiles wait queues.
 - /usr/bin/openfiles/test_fs_linux: A test of local file I/O
-- /usr/bin/openfiles/test_fs_smb: A test of remote smb file I/O
+- /usr/bin/openfiles/test_fs_smb: A test of remote smb file I/O.  Only installed on an smb variant of openfiles.
 - /usr/bin/openfiles/test_all: An aggregate of all tests
 - /usr/lib/libof_core_shared.so.1*: The openfiles framework
-- /usr/lib/libof_smb_shared.so.1*: The openfiles smb support
-
-NOTE: The /usr/bin/openfiles/smbcp binary is installed by the smbcp package
-NOTE: The /usr/bin/openfiles/test_* are installed by the openfiles-test package
+- /usr/lib/libof_smb_shared.so.1*: The openfiles smb support.  Only installed on an smb variant of openfiles
 
 NOTE: the test_* applications are designed as continuous integration (CI)
 applications.  As such they are statically linked and configured statically
@@ -200,7 +194,7 @@ not really appropriate in a deployed system.  This becomes an issue with
 the test_fs_linux and test_fs_smb applications.  The path to use for the
 test is statically configured during the build.  For test_fs_linux it is
 configured with `/tmp/openfiles`.  For test_fs_smb it is configured with
-`//rschmitt:happy@192.168.1.206:445/spiritcloud/`.  The static configuration
+`//****:****@192.168.1.206:445/spiritcloud/`.  The static configuration
 for test_fs_linux may be fine for running in a non CI environment but
 obviously the test_fs_smb configuration will be inappropriate in a non-ci
 environment.
@@ -269,9 +263,9 @@ $ ./build-yocto-smbfs/of_core/test/test_fs_linux
 1502715539 Loading /etc/openfiles.xml
 1502715539 Device Name: localhost
 Unity test run 1 of 1
-1502715539 Starting File Test with //rschmitt:happy@192.168.1.206/spiritcloud/openfiles
+1502715539 Starting File Test with //*****:*****@192.168.1.206/spiritcloud/openfiles
 
-1502716543 Failed to Validate Destination //rschmitt:happy@192.168.1.206/spiritcloud/openfiles, Not Supported(50)
+1502716543 Failed to Validate Destination //****:****@192.168.1.206/spiritcloud/openfiles, Not Supported(50)
 .
 
 -----------------------
@@ -337,19 +331,20 @@ The output of a smbcp session from a remote location to a remote location is
 below:
 
 ```
-root@qemuarm64:~# /usr/bin/openfiles/smbcp -a //rschmitt:happy@192.168.1.206/spi
-ritcloud/lizards.jpg //rschmitt:happy@192.168.1.206/spiritcloud/lizard_copy.jpg
+root@qemuarm64:~# /usr/bin/openfiles/smbcp -a //*****:*******@192.168.1.206/spi
+ritcloud/lizards.jpg //****:****@192.168.1.206/spiritcloud/lizard_copy.jpg
 1435756250 OpenFiles (main) 5.0 1
 1435756250 Loading /etc/openfiles.xml
 1435756254 Device Name: localhost
 1435756257 OpenFiles SMB (main) 5.0 1
-Copying //rschmitt:happy@192.168.1.206/spiritcloud/lizards.jpg to //rschmitt:happy@192.168.1.206/spiritcloud/lizard_copy.jpg: [ok]
+Copying //******:*****@192.168.1.206/spiritcloud/lizards.jpg to //****:*****@192.168.1.206/spiritcloud/lizard_copy.jpg: [ok]
 Total Allocated Memory 616, Max Allocated Memory 794571
 ```
 
 The first line is the invocation of the command.  We wish to perform an
-asynchronous copy from a remote file to a remote file.  The username is
-rschmitt, the password is happy, the server is specified with an IP address
+asynchronous copy from a remote file to a remote file.  The username and
+password have been hidden for privacy.  
+The server is specified with an IP address
 (although a DNS name is acceptable).  The share is named spiritcloud.  The
 file we are copying from is called lizards.jpg.  The destination is the same
 user, password, remote, and share but with a target filename of
@@ -417,7 +412,7 @@ openfiles exposes an ascii API as well but wide characters is recommended.
 
 There are six openfiles header files used by this application.  Openfiles
 provides a robust set of APIs for many services.  We recommend viewing
-the (openfiles api documentation)[http://www.connectedway.com/openfiles] for
+the [openfiles api documentation](http://www.connectedway.com/openfiles) for
 a detail.  The Openfiles recipe installs a subset of the available APIs into
 the yocto sysroot.  If you find that particular headers are not available in
 your sysroot, Connected Way support will be glad to export them for you.
