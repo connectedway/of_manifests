@@ -92,11 +92,15 @@ $ chmod a+x repo
 ```
 
 Initialize your workspace.  We currently support two yocto releases: pyro
-(for the 4.9 kernel) and hardknott (for the 5.10 kernel).  Specify either
-pyro or hardknott in the branch argument of the repo init command below:
+(for the 4.9 kernel) and hardknott (for the 5.10 kernel).  We also
+support two types of builds: core and smb.  Core is the opensource
+openfiles framework.  Smb adds the smb client (and server) to the
+build.  Specify either
+pyro or hardknott in the branch argument and the core.xml or smb.xml of
+the repo init command below:
 
 ```
-./repo init https://github.com/connectedway/of_manifests -b pyro
+./repo init https://github.com/connectedway/of_manifests -m core.xml -b pyro
 ./repo sync
 ```
 

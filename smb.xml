@@ -4,13 +4,13 @@
   <remote fetch="http://git.openembedded.org" name = "openembedded"/>
   <default sync-j="4"/>
   
-  <project name="poky" path="layers/poky" remote="connectedway" revision="pyro-20.04">
+  <project name="poky" path="layers/poky" remote="connectedway" revision="main">
     <linkfile src="bitbake" dest="bitbake"/>
   </project>
-  <project name="meta-openembedded" path="layers/meta-openembedded" remote="openembedded" revision="pyro"/>
-  <project name="meta-connectedway" path="layers/meta-connectedway" remote="connectedway" revision="pyro">
+  <project name="meta-openembedded" path="layers/meta-openembedded" remote="openembedded" revision="main"/>
+  <project name="meta-connectedway" path="layers/meta-connectedway" remote="connectedway" revision="main">
     <copyfile src="scripts/oe-init-build-env" dest="oe-init-build-env"/>
-    <linkfile src="template-core" dest=".templateconf"/>
+    <linkfile src="template-smb" dest=".templateconf"/>
     <copyfile src="scripts/runqemu.openfiles" dest="runqemu.openfiles"/>
   </project>
 </manifest>
