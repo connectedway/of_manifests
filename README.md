@@ -120,17 +120,14 @@ $ source oe-init-build-env
 
 By default, the openfile distribution from the Connected Way
 git repo will build Openfiles SMB support for a qemuarm64
-machine.  If you wish either non-smb support or to build for a different
+machine.  If you wish to build for a different
 target, you will have to modify the `poky/build/conf/local.conf` and
-make the OPTIONAL following changes:
+make the OPTIONAL following change:
 
 1. Select the correct target MACHINE.  We use qemuarm64:
 ```
 MACHINE ?= "qemuarm64"
 ```
-
-2. Either uncomment or comment out the OF_TYPE variable for smb or non-smb
-support respectively
 
 # Building A Poky Distribution With OpenFiles
 
